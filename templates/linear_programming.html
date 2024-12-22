@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Linear Programming{% endblock %}
+
+{% block content %}
+    <div class="main">
+        <h2>What is Linear Programming?</h2>
+        <p>Broadly speaking, linear programming (linear optimization) is an optimization process of a linear function. One can choose between minimizing and maximizing the function of interest, the only requirement is that function is linear. In other words, the function must be able to be expressed as follows:</p>
+        <p>\(f(\mathbf{x}) = \mathbf{c}^T \mathbf{x}\)</p>
+        <p>Where \(\mathbf{x}\) and \(\mathbf{c}\) are both vectors, and \(\mathbf{c}\) is a vector of constants.</p>
+        <p>Furthermore, this we are required to have additional bounds else \(\mathbf{x} \to \infty\) or \(\mathbf{x} \to 0\) would be allowed.</p>
+        <p>So we can assign additional boundaries to \(\mathbf{x}\). Principally, \(\mathbf{x} < \mathbf{b}\) for some \(\mathbf{b} \in \mathbb{R}^n\). The value of \(\mathbf{b}\) should be defined based on the problem one is trying to solve. More on that later.</p>
+        <hr>
+        <h2>Linear Programming is Intuitively a Geometric Endeavor</h2>
+        <h3>What if geometric methods are too hard?</h3>
+        <h2>Algorithmic Approaches to Linear Programming</h2>
+        <h4>Simplex Method:</h4>
+        <p><strong>pivoting</strong></p>
+        <p>Loosen one constraint, tighten another. In other words, get closer to one of our boundaries, while traversing away from another.</p>
+        <p>Record behavior along different critical points, save the best one.</p>
+        <p>Slack variables are applied to each equation in a system and correspond to the variables present in a given equation. These turn inequalities into equalities.</p>
+        <p>A tight inequality occurs when \( s_n \) is set to 0 in the equality version. They become a boolean determining whether we a position is tight.</p>
+        <p>\(\mathbf{x}\) and \( s \) variables can be loose or tight, and one just needs to check.</p>
+        <p><strong>SELECT A VARIABLE TO LOOSEN:</strong></p>
+        <p>Dantzig's pivot method: select variable with largest positive coefficient in the objective function.</p>
+        <p>Look at equalities where the loosened variable appears. Of any loose variables present, one chooses <strong>one</strong> to tighten. This is selected based on the ratio between the selected variable and the constants in the equations where it appears. Pick the loose variable in the function with the <strong>largest nonpositive ratio</strong> between the selected variable and the constant in its equation.</p>
+        <p>We've now loosened and tightened a pair of variables, so we need to move our equations around so loose variables are on the left and tight variables are on the right.</p>
+        <p>We then have a new equation for our selected variable, and we substitute that into wherever it used to exist.</p>
+        <h3>Duality:</h3>
+        <p>Bounding our objective function to demonstrate optimal solution has been found.</p>
+        <p>(weak duality theorem)</p>
+        <p>We want an equality.</p>
+        <p>(strong duality theorem)</p>
+        <p>If the primal has an optimum, we can always find duality.</p>
+        <hr>
+        <h2>Interactive 3D Plot</h2>
+        <form id="lp-form" action="{{ url_for('linear_programming') }}" method="post" onsubmit="saveScrollPosition()">
+            <label for="x_min">X Min:</label>
+            <input type="number" id="x_min" name="x_min" value="-5" required>
+            <label for="x_max">X Max:</label>
+            <input type="number" id="x_max" name="x_max" value="5" required>
+            <label for="y_min">Y Min:</label>
+            <input type="number" id="y_min" name="y_min" value="-5" required>
+            <label for="y_max">Y Max:</label>
+            <input type="number" id="y_max" name="y_max" value="5" required>
+            <button type="submit">Generate Plot</button>
+        </form>
+        {% if plot_url %}
+            <iframe src="{{ plot_url }}" width="100%" height="600px" frameborder="0"></iframe>
+        {% endif %}
+    </div>
+    <script>
+        function saveScrollPosition() {
+            const scrollPosition = window.scrollY;
+            localStorage.setItem('scrollPosition', scrollPosition);
+        }
+
+        function restoreScrollPosition() {
+            const scrollPosition = localStorage.getItem('scrollPosition');
+            if (scrollPosition) {
+                window.scrollTo(0, parseInt(scrollPosition));
+                localStorage.removeItem('scrollPosition');
+            }
+        }
+
+        window.onload = restoreScrollPosition;
+    </script>
+{% endblock %}
